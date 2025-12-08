@@ -1,7 +1,7 @@
 package com.azziedevelopment.ai2mqtt.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.azziedevelopment.ai2mqtt.dto.AIRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -40,13 +40,13 @@ public class MQTTAdapter implements MessagingService {
 	@Override
 	public void sendResponse(String correlationId, String threadId, String responseText) {
 		String jsonPayload = """
-            {
-                "id": "%s",
-                "threadId": "%s",
-                "response": "%s"
-            }
-            """.formatted(correlationId, threadId,
-				responseText.replace("\"", "\\\"").replace("\n", "\\n"));
+			{
+			    "id": "%s",
+			    "threadId": "%s",
+			    "response": "%s"
+			}
+			""".formatted(correlationId, threadId,
+			responseText.replace("\"", "\\\"").replace("\n", "\\n"));
 
 		Message<String> message = MessageBuilder.withPayload(jsonPayload).build();
 
@@ -114,7 +114,7 @@ public class MQTTAdapter implements MessagingService {
 		public MqttPahoMessageDrivenChannelAdapter inboundAdapter(MqttPahoClientFactory clientFactory) {
 			String listenerId = clientId + "-listener";
 			MqttPahoMessageDrivenChannelAdapter adapter =
-					new MqttPahoMessageDrivenChannelAdapter(listenerId, clientFactory, promptTopic);
+				new MqttPahoMessageDrivenChannelAdapter(listenerId, clientFactory, promptTopic);
 
 			adapter.setCompletionTimeout(5000);
 			adapter.setConverter(new DefaultPahoMessageConverter());

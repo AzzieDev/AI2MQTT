@@ -32,31 +32,31 @@ public class HAAutoDiscovery {
 		// 1. We truncate the main state to 250 chars to avoid "Unknown" errors.
 		// 2. We put the FULL response into a 'full_text' attribute.
 		String configPayload = """
-            {
-              "name": "AI Last Response",
-              "unique_id": "ai2mqtt_last_response",
-              "state_topic": "%s",
-              "value_template": "{{ value_json.response | truncate(250) }}",
-              "json_attributes_topic": "%s",
-              "json_attributes_template": "{{ {'full_text': value_json.response} | tojson }}",
-              "icon": "mdi:robot",
-              "device": {
-                "identifiers": ["ai2mqtt_bridge"],
-                "name": "AI2MQTT Bridge",
-                "model": "Spring Boot Service",
-                "manufacturer": "Azzie Development",
-                "sw_version": "1.0.0"
-              }
-            }
-            """.formatted(responseTopic, responseTopic);
+			{
+			  "name": "AI Last Response",
+			  "unique_id": "ai2mqtt_last_response",
+			  "state_topic": "%s",
+			  "value_template": "{{ value_json.response | truncate(250) }}",
+			  "json_attributes_topic": "%s",
+			  "json_attributes_template": "{{ {'full_text': value_json.response} | tojson }}",
+			  "icon": "mdi:robot",
+			  "device": {
+			    "identifiers": ["ai2mqtt_bridge"],
+			    "name": "AI2MQTT Bridge",
+			    "model": "Spring Boot Service",
+			    "manufacturer": "Azzie Development",
+			    "sw_version": "1.0.0"
+			  }
+			}
+			""".formatted(responseTopic, responseTopic);
 
 		String discoveryTopic = "homeassistant/sensor/ai2mqtt/response/config";
 
 		Message<String> message = MessageBuilder
-				.withPayload(configPayload)
-				.setHeader("mqtt_topic", discoveryTopic)
-				.setHeader("mqtt_retained", true)
-				.build();
+			.withPayload(configPayload)
+			.setHeader("mqtt_topic", discoveryTopic)
+			.setHeader("mqtt_retained", true)
+			.build();
 
 		try {
 			mqttOutboundHandler.handleMessage(message);

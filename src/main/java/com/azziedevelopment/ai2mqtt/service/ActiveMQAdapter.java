@@ -1,7 +1,7 @@
 package com.azziedevelopment.ai2mqtt.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.azziedevelopment.ai2mqtt.dto.AIRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.jms.Message;
 import jakarta.jms.TextMessage;
 import lombok.RequiredArgsConstructor;
@@ -41,12 +41,12 @@ public class ActiveMQAdapter implements MessagingService {
 					// Reconstruct if ID is missing in JSON (DTO has 6 fields now)
 					if (request.id() == null) {
 						request = new AIRequest(
-								correlationId,
-								request.threadId(),
-								request.text(),
-								request.systemPrompt(),
-								request.maxTokens(),
-								request.temperature()
+							correlationId,
+							request.threadId(),
+							request.text(),
+							request.systemPrompt(),
+							request.maxTokens(),
+							request.temperature()
 						);
 					}
 				} catch (Exception e) {
@@ -57,10 +57,10 @@ public class ActiveMQAdapter implements MessagingService {
 
 				// Pass systemPrompt (arg 4) to the service
 				aiService.processPrompt(
-						request.id(),
-						request.threadId(),
-						request.text(),
-						request.systemPrompt()
+					request.id(),
+					request.threadId(),
+					request.text(),
+					request.systemPrompt()
 				);
 			}
 		} catch (Exception e) {

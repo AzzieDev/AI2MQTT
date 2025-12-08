@@ -47,10 +47,10 @@ public class OpenAIService {
 		String cleanKey = (rawApiKey != null) ? rawApiKey.trim() : "";
 
 		this.restClient = builder
-				.baseUrl(baseUrl)
-				.defaultHeader("Authorization", "Bearer " + cleanKey)
-				.defaultHeader("Content-Type", "application/json")
-				.build();
+			.baseUrl(baseUrl)
+			.defaultHeader("Authorization", "Bearer " + cleanKey)
+			.defaultHeader("Content-Type", "application/json")
+			.build();
 	}
 
 	public void processPrompt(String correlationId, String threadId, String promptText, String systemPromptOverride) {
@@ -63,28 +63,28 @@ public class OpenAIService {
 		List<Map<String, String>> messages = new ArrayList<>();
 
 		String effectiveSystemPrompt = (systemPromptOverride != null && !systemPromptOverride.isBlank())
-				? systemPromptOverride
-				: defaultSystemPrompt;
+			? systemPromptOverride
+			: defaultSystemPrompt;
 
 		messages.add(Map.of("role", "system", "content", effectiveSystemPrompt));
 
 		messages.addAll(history.stream()
-				.map(msg -> List.of(
-						Map.of("role", "user", "content", msg.getPrompt()),
-						Map.of("role", "assistant", "content", (msg.getResponse() != null ? msg.getResponse() : ""))
-				))
-				.flatMap(List::stream)
-				.collect(Collectors.toList()));
+			.map(msg -> List.of(
+				Map.of("role", "user", "content", msg.getPrompt()),
+				Map.of("role", "assistant", "content", (msg.getResponse() != null ? msg.getResponse() : ""))
+			))
+			.flatMap(List::stream)
+			.collect(Collectors.toList()));
 
 		messages.add(Map.of("role", "user", "content", promptText));
 
 		ConversationPair conversation = ConversationPair.builder()
-				.id(correlationId)
-				.threadId(threadId)
-				.prompt(promptText)
-				.status("PENDING")
-				.timestamp(LocalDateTime.now())
-				.build();
+			.id(correlationId)
+			.threadId(threadId)
+			.prompt(promptText)
+			.status("PENDING")
+			.timestamp(LocalDateTime.now())
+			.build();
 		repository.save(conversation);
 
 		try {
@@ -108,15 +108,22 @@ public class OpenAIService {
 		AIRequestPayload request = new AIRequestPayload(defaultModel, messages, defaultMaxTokens);
 
 		return restClient.post()
-				.uri("/chat/completions")
-				.body(request)
-				.retrieve()
-				.body(AIResponsePayload.class)
-				.choices().get(0).message().content();
+			.uri("/chat/completions")
+			.body(request)
+			.retrieve()
+			.body(AIResponsePayload.class)
+			.choices().get(0).message().content();
 	}
 
-	private record AIRequestPayload(String model, List<Map<String, String>> messages, int max_tokens) {}
-	private record AIResponsePayload(List<AIChoice> choices) {}
-	private record AIChoice(AIMessage message) {}
-	private record AIMessage(String content) {}
+	private record AIRequestPayload(String model, List<Map<String, String>> messages, int max_tokens) {
+	}
+
+	private record AIResponsePayload(List<AIChoice> choices) {
+	}
+
+	private record AIChoice(AIMessage message) {
+	}
+
+	private record AIMessage(String content) {
+	}
 }
