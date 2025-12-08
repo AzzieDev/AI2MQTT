@@ -62,6 +62,7 @@ services:
 
       # --- CONFIGURATION ---
       - MESSAGING_TYPE=mqtt
+      - HOMEASSISTANT_DISCOVERY_ENABLED=true
       - OPENAI_MODEL=gemini-2.5-flash
       # Use the OpenAI-compatible endpoint for Gemini
       - OPENAI_BASE_URL=[https://generativelanguage.googleapis.com/v1beta/openai/](https://generativelanguage.googleapis.com/v1beta/openai/)
@@ -211,16 +212,17 @@ Access the dashboard at `http://localhost:8080`.
 
 ## Configuration Reference
 
-| Environment Variable   | Default                     | Description                         |
-|:-----------------------|:----------------------------|:------------------------------------|
-| `MESSAGING_TYPE`       | `mqtt`                      | `mqtt` or `activemq`                |
-| `OPENAI_API_KEY`       | -                           | Your API Key (Gemini/OpenAI)        |
-| `OPENAI_BASE_URL`      | `https://api.openai.com/v1` | Change for Gemini/LocalAI           |
-| `OPENAI_MODEL`         | `gpt-4o`                    | Model ID (`gemini-1.5-flash`, etc.) |
-| `OPENAI_SYSTEM_PROMPT` | "You are a helpful..."      | Default persona                     |
-| `MQTT_BROKER_URL`      | `tcp://localhost:1883`      | Broker Address                      |
-| `MQTT_USERNAME`        | -                           | Broker User                         |
-| `MQTT_PASSWORD`        | -                           | Broker Password                     |
+| Environment Variable              | Default                     | Description                         |
+|:----------------------------------|:----------------------------|:------------------------------------|
+| `MESSAGING_TYPE`                  | `mqtt`                      | `mqtt` or `activemq`                |
+| `OPENAI_API_KEY`                  | -                           | Your API Key (Gemini/OpenAI)        |
+| `OPENAI_BASE_URL`                 | `https://api.openai.com/v1` | Change for Gemini/LocalAI           |
+| `OPENAI_MODEL`                    | `gpt-4o`                    | Model ID (`gemini-1.5-flash`, etc.) |
+| `OPENAI_SYSTEM_PROMPT`            | "You are a helpful..."      | Default persona                     |
+| `MQTT_BROKER_URL`                 | `tcp://localhost:1883`      | Broker Address                      |
+| `MQTT_USERNAME`                   | -                           | Broker User                         |
+| `MQTT_PASSWORD`                   | -                           | Broker Password                     |
+| `HOMEASSISTANT_DISCOVERY_ENABLED` | `false`                     | Discovery for MQTT in HA            |
 
 ---
 

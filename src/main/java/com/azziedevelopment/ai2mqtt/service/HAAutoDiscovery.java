@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "messaging.type", havingValue = "mqtt")
+@ConditionalOnProperty(name = "homeassistant.discovery.enabled", havingValue = "true")
 public class HAAutoDiscovery {
 
 	@Qualifier("mqttOutboundHandler")
