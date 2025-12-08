@@ -41,7 +41,8 @@
 					<div class="col-md-9">
 						<label class="form-label fw-bold" for="promptInput">Prompt</label>
 						<div class="input-group">
-							<input class="form-control" id="promptInput" name="prompt" placeholder="Ask the AI something..." required
+							<input class="form-control" id="promptInput" name="prompt"
+								   placeholder="Ask the AI something..." required
 								   type="text">
 							<button class="btn btn-success fw-bold" type="submit">Send</button>
 						</div>
@@ -49,13 +50,15 @@
 
 					<div class="col-12">
 						<a aria-controls="advancedOptions" aria-expanded="false"
-						   class="text-decoration-none small text-muted" data-bs-toggle="collapse" href="#advancedOptions" role="button">
+						   class="text-decoration-none small text-muted" data-bs-toggle="collapse"
+						   href="#advancedOptions" role="button">
 							⚙️ Advanced Options (System Persona)
 						</a>
 						<div class="collapse mt-2" id="advancedOptions">
 							<div class="card card-body bg-body-tertiary">
 								<label class="form-label fw-bold" for="systemPrompt">System Persona Override</label>
-								<input class="form-control" id="systemPrompt" name="systemPrompt" placeholder="e.g., 'You are a sarcastic pirate.' (Leave blank for default)"
+								<input class="form-control" id="systemPrompt" name="systemPrompt"
+									   placeholder="e.g., 'You are a sarcastic pirate.' (Leave blank for default)"
 									   type="text">
 								<div class="form-text">If set, this replaces the default behavior defined in
 									application.properties.
