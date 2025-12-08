@@ -27,7 +27,6 @@ public class OpenAIService {
 	private final int defaultMaxTokens;
 	private final String defaultSystemPrompt;
 
-	// FIX: Inject values via Constructor so they are ready immediately
 	public OpenAIService(ConversationRepository repository,
 	                     @Lazy MessagingService messagingService,
 	                     RestClient.Builder builder,
@@ -43,8 +42,17 @@ public class OpenAIService {
 		this.defaultMaxTokens = defaultMaxTokens;
 		this.defaultSystemPrompt = defaultSystemPrompt;
 
-		// NOW this works because rawApiKey is passed in directly
-		String cleanKey = (rawApiKey != null) ? rawApiKey.trim() : "";
+		// Validation: Catch missing secrets gracefully so the app starts even if config is bad
+		String cleanKey;
+		// Check for null, empty, or the literal placeholder syntax (if Spring fails to resolve it)
+		if (rawApiKey == null || rawApiKey.isBlank() || "${GEMINI_API_KEY}".equals(rawApiKey)) {
+			log.error("CRITICAL: OpenAI API Key is missing! App will start, but AI features will fail.");
+			log.info("Solution: Create 'src/main/resources/secrets.properties' with GEMINI_API_KEY=...");
+			cleanKey = "missing-key";
+		} else {
+			cleanKey = rawApiKey.trim();
+			log.info("OpenAI Service Initialized (Key: {}...)", cleanKey.substring(0, Math.min(4, cleanKey.length())));
+		}
 
 		this.restClient = builder
 			.baseUrl(baseUrl)
@@ -59,15 +67,18 @@ public class OpenAIService {
 
 		log.info("Processing Prompt [Thread: {}]: {}", threadId, promptText);
 
+		// 1. Fetch History
 		List<ConversationPair> history = repository.findByThreadIdOrderByTimestampAsc(threadId);
 		List<Map<String, String>> messages = new ArrayList<>();
 
+		// 2. Determine System Prompt (Override vs Default)
 		String effectiveSystemPrompt = (systemPromptOverride != null && !systemPromptOverride.isBlank())
 			? systemPromptOverride
 			: defaultSystemPrompt;
 
 		messages.add(Map.of("role", "system", "content", effectiveSystemPrompt));
 
+		// 3. Add History
 		messages.addAll(history.stream()
 			.map(msg -> List.of(
 				Map.of("role", "user", "content", msg.getPrompt()),
@@ -76,8 +87,10 @@ public class OpenAIService {
 			.flatMap(List::stream)
 			.collect(Collectors.toList()));
 
+		// 4. Add Current User Prompt
 		messages.add(Map.of("role", "user", "content", promptText));
 
+		// 5. Save PENDING State
 		ConversationPair conversation = ConversationPair.builder()
 			.id(correlationId)
 			.threadId(threadId)
@@ -88,8 +101,10 @@ public class OpenAIService {
 		repository.save(conversation);
 
 		try {
+			// 6. Call AI Endpoint
 			String aiResponse = callAIEndpoint(messages);
 
+			// 7. Update DB & Send Response
 			conversation.setResponse(aiResponse);
 			conversation.setStatus("COMPLETED");
 			repository.save(conversation);
@@ -115,15 +130,9 @@ public class OpenAIService {
 			.choices().get(0).message().content();
 	}
 
-	private record AIRequestPayload(String model, List<Map<String, String>> messages, int max_tokens) {
-	}
-
-	private record AIResponsePayload(List<AIChoice> choices) {
-	}
-
-	private record AIChoice(AIMessage message) {
-	}
-
-	private record AIMessage(String content) {
-	}
+	// --- Inner Records (DTOs) for OpenAI JSON ---
+	private record AIRequestPayload(String model, List<Map<String, String>> messages, int max_tokens) {}
+	private record AIResponsePayload(List<AIChoice> choices) {}
+	private record AIChoice(AIMessage message) {}
+	private record AIMessage(String content) {}
 }
