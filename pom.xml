@@ -66,7 +66,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-activemq</artifactId>
-			<optional>true</optional>
 		</dependency>
 
 		<dependency>
