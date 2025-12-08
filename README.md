@@ -6,6 +6,7 @@ models.
 It listens for prompts on **MQTT** (Home Assistant) or **ActiveMQ**, maintains conversation context (chat chaining), and
 forwards requests to **OpenAI**, **Google Gemini**, or self-hosted LLMs like **vLLM** or **Ollama**.
 
+[![Build & Publish Docker Image](https://github.com/AzzieDev/AI2MQTT/actions/workflows/deploy.yaml/badge.svg)](https://github.com/AzzieDev/AI2MQTT/actions/workflows/deploy.yaml)
 ![Java](https://img.shields.io/badge/Java-25-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.0-green)
 ![Docker](https://img.shields.io/badge/Docker-Ready-blue)
