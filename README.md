@@ -48,72 +48,72 @@ MQTT_PASSWORD=your_mqtt_password
 
 ```yaml
 services:
-	ai2mqtt:
-		image: ghcr.io/azziedevelopment/ai2mqtt:latest
-		container_name: ai2mqtt
-		restart: unless-stopped
-		ports:
-			- "8080:8080" # Web Dashboard
-		environment:
-			# --- SECRETS ---
-			- GEMINI_API_KEY=${GEMINI_API_KEY}
-			- MQTT_USER=${MQTT_USER}
-			- MQTT_PASSWORD=${MQTT_PASSWORD}
+  ai2mqtt:
+    image: ghcr.io/azziedevelopment/ai2mqtt:latest
+    container_name: ai2mqtt
+    restart: unless-stopped
+    ports:
+      - "8080:8080" # Web Dashboard
+    environment:
+      # --- SECRETS ---
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - MQTT_USER=${MQTT_USER}
+      - MQTT_PASSWORD=${MQTT_PASSWORD}
 
-			# --- CONFIGURATION ---
-			- MESSAGING_TYPE=mqtt
-			- OPENAI_MODEL=gemini-2.5-flash
-			# Use the OpenAI-compatible endpoint for Gemini
-			- OPENAI_BASE_URL=[https://generativelanguage.googleapis.com/v1beta/openai/](https://generativelanguage.googleapis.com/v1beta/openai/)
+      # --- CONFIGURATION ---
+      - MESSAGING_TYPE=mqtt
+      - OPENAI_MODEL=gemini-2.5-flash
+      # Use the OpenAI-compatible endpoint for Gemini
+      - OPENAI_BASE_URL=[https://generativelanguage.googleapis.com/v1beta/openai/](https://generativelanguage.googleapis.com/v1beta/openai/)
 
-			# --- CONNECTIVITY ---
-			# Use 'core-mosquitto' if running inside HA OS, or your broker IP
-			- MQTT_BROKER_URL=tcp://homeassistant.local:1883
+      # --- CONNECTIVITY ---
+      # Use 'core-mosquitto' if running inside HA OS, or your broker IP
+      - MQTT_BROKER_URL=tcp://homeassistant.local:1883
 
-		volumes:
-			- ./data:/app/data # Persist chat history
+    volumes:
+      - ./data:/app/data # Persist chat history
 ```
 
 #### With ActiveMQ Classic:
 
 ```yaml
 services:
-	ai2mqtt:
-		image: ghcr.io/azziedevelopment/ai2mqtt:latest
-		container_name: ai2mqtt-app
-		restart: unless-stopped
-		ports:
-			- "8080:8080" # Web Dashboard
-		environment:
-			- MESSAGING_TYPE=activemq
+  ai2mqtt:
+    image: ghcr.io/azziedevelopment/ai2mqtt:latest
+    container_name: ai2mqtt-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080" # Web Dashboard
+    environment:
+      - MESSAGING_TYPE=activemq
 
-			# --- ACTIVEMQ CONNECTION ---
-			- SPRING_ACTIVEMQ_BROKER_URL=tcp://activemq:61616
-			- SPRING_ACTIVEMQ_USER=admin
-			- SPRING_ACTIVEMQ_PASSWORD=admin
+      # --- ACTIVEMQ CONNECTION ---
+      - SPRING_ACTIVEMQ_BROKER_URL=tcp://activemq:61616
+      - SPRING_ACTIVEMQ_USER=admin
+      - SPRING_ACTIVEMQ_PASSWORD=admin
 
-			# --- AI SECRETS (From your .env file) ---
-			- GEMINI_API_KEY=${GEMINI_API_KEY}
-			- OPENAI_MODEL=gemini-2.5-flash
-			- OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
+      # --- AI SECRETS (From your .env file) ---
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - OPENAI_MODEL=gemini-2.5-flash
+      - OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
 
-		volumes:
-			- ./data:/app/data # Persist H2 Database history
-		depends_on:
-			- activemq
+    volumes:
+      - ./data:/app/data # Persist H2 Database history
+    depends_on:
+      - activemq
 
-	activemq:
-		image: apache/activemq-classic:latest
-		container_name: activemq-broker
-		restart: always
-		ports:
-			- "61616:61616" # OpenWire Port (JMS)
-			- "8161:8161"   # Web Console (UI)
-		environment:
-			# Memory limits for the Java Heap inside the container
-			- ACTIVEMQ_MIN_MEMORY=512
-			- ACTIVEMQ_MAX_MEMORY=1024
-			# Default credentials are usually admin/admin
+  activemq:
+    image: apache/activemq-classic:latest
+    container_name: activemq-broker
+    restart: always
+    ports:
+      - "61616:61616" # OpenWire Port (JMS)
+      - "8161:8161"   # Web Console (UI)
+    environment:
+      # Memory limits for the Java Heap inside the container
+      - ACTIVEMQ_MIN_MEMORY=512
+      - ACTIVEMQ_MAX_MEMORY=1024
+      # Default credentials are usually admin/admin
 ```
 
 ---
@@ -126,11 +126,11 @@ Send a JSON payload to the **Prompts Topic** (`ai/prompts`).
 
 ```json
 {
-	"id": "optional-uuid",
-	"threadId": "kitchen-display",
-	"text": "What should I cook for dinner?",
-	"systemPrompt": "You are a Michelin star chef. Be brief.",
-	"maxTokens": 200
+  "id": "optional-uuid",
+  "threadId": "kitchen-display",
+  "text": "What should I cook for dinner?",
+  "systemPrompt": "You are a Michelin star chef. Be brief.",
+  "maxTokens": 200
 }
 ```
 
@@ -146,9 +146,9 @@ The service replies to `ai/responses`:
 
 ```json
 {
-	"id": "uuid-of-request",
-	"threadId": "kitchen-display",
-	"response": "How about a pan-seared salmon with asparagus?"
+  "id": "uuid-of-request",
+  "threadId": "kitchen-display",
+  "response": "How about a pan-seared salmon with asparagus?"
 }
 ```
 
@@ -160,8 +160,8 @@ When running in `mqtt` mode, AI2MQTT automatically broadcasts a discovery packet
 
 1. **Device:** Appears as **"AI2MQTT Bridge"** in HA Devices.
 2. **Sensor:** Creates a sensor `sensor.ai_last_response`.
-	* **State:** Truncated text (max 250 chars) to prevent state limit errors.
-	* **Attribute `full_text`:** Contains the complete AI response (no length limit).
+  * **State:** Truncated text (max 250 chars) to prevent state limit errors.
+  * **Attribute `full_text`:** Contains the complete AI response (no length limit).
 
 ### Displaying Full Text (Lovelace Markdown Card)
 

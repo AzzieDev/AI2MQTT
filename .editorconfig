@@ -1,7 +1,7 @@
 # Top-most EditorConfig file
 root = true
 
-# All files
+# All files (Default to tabs for Java, etc.)
 [*]
 indent_style = tab
 indent_size = 4
@@ -10,7 +10,8 @@ charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
 
-# You can add specific overrides for file types if needed
-# [*.yaml]
-# indent_style = space
-# indent_size = 2
+# Overrides for Markdown and YAML
+# GitHub renders tabs poorly in MD, and YAML forbids tabs entirely.
+[*.{yml,yaml,md}]
+indent_style = space
+indent_size = 2
