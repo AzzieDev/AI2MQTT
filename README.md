@@ -217,7 +217,7 @@ Access the dashboard at `http://localhost:8080`.
 | `MESSAGING_TYPE`                  | `mqtt`                      | `mqtt` or `activemq`                |
 | `OPENAI_API_KEY`                  | -                           | Your API Key (Gemini/OpenAI)        |
 | `OPENAI_BASE_URL`                 | `https://api.openai.com/v1` | Change for Gemini/LocalAI           |
-| `OPENAI_MODEL`                    | `gpt-4o`                    | Model ID (`gemini-1.5-flash`, etc.) |
+| `OPENAI_MODEL`                    | `gpt-4o`                    | Model ID (`gemini-2.5-flash`, etc.) |
 | `OPENAI_SYSTEM_PROMPT`            | "You are a helpful..."      | Default persona                     |
 | `MQTT_BROKER_URL`                 | `tcp://localhost:1883`      | Broker Address                      |
 | `MQTT_USERNAME`                   | -                           | Broker User                         |
