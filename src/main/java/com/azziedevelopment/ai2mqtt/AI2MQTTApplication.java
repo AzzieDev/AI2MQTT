@@ -1,6 +1,5 @@
 package com.azziedevelopment.ai2mqtt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -8,7 +7,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.web.client.RestClient;
 
 @Slf4j
 @SpringBootApplication
@@ -17,16 +15,6 @@ public class AI2MQTTApplication {
 
 	static void main(String[] args) {
 		SpringApplication.run(AI2MQTTApplication.class, args);
-	}
-
-	@Bean
-	public RestClient.Builder restClientBuilder() {
-		return RestClient.builder();
-	}
-
-	@Bean
-	public ObjectMapper objectMapper() {
-		return new ObjectMapper();
 	}
 
 	@Bean
