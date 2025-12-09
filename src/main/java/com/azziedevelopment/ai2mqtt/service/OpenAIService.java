@@ -26,6 +26,7 @@ public class OpenAIService {
 	private final String defaultModel;
 	private final int defaultMaxTokens;
 	private final String defaultSystemPrompt;
+	private final double defaultTemperature;
 
 	public OpenAIService(ConversationRepository repository,
 	                     @Lazy MessagingService messagingService,
@@ -34,17 +35,18 @@ public class OpenAIService {
 	                     @Value("${openai.api.key}") String rawApiKey,
 	                     @Value("${openai.model}") String defaultModel,
 	                     @Value("${openai.default.max-tokens:500}") int defaultMaxTokens,
-	                     @Value("${openai.system-prompt:You are a helpful assistant.}") String defaultSystemPrompt) {
+	                     @Value("${openai.system-prompt:You are a helpful assistant.}") String defaultSystemPrompt,
+	                     @Value("${openai.default.temperature:0.7}") double defaultTemperature) {
 
 		this.repository = repository;
 		this.messagingService = messagingService;
 		this.defaultModel = defaultModel;
 		this.defaultMaxTokens = defaultMaxTokens;
 		this.defaultSystemPrompt = defaultSystemPrompt;
+		this.defaultTemperature = defaultTemperature;
 
-		// Validation: Catch missing secrets gracefully so the app starts even if config is bad
+		// Validation: Catch missing secrets gracefully
 		String cleanKey;
-		// Check for null, empty, or the literal placeholder syntax (if Spring fails to resolve it)
 		if (rawApiKey == null || rawApiKey.isBlank() || "${GEMINI_API_KEY}".equals(rawApiKey)) {
 			log.error("CRITICAL: OpenAI API Key is missing! App will start, but AI features will fail.");
 			log.info("Solution: Create 'src/main/resources/secrets.properties' with GEMINI_API_KEY=...");
@@ -71,7 +73,7 @@ public class OpenAIService {
 		List<ConversationPair> history = repository.findByThreadIdOrderByTimestampAsc(threadId);
 		List<Map<String, String>> messages = new ArrayList<>();
 
-		// 2. Determine System Prompt (Override vs Default)
+		// 2. Determine System Prompt
 		String effectiveSystemPrompt = (systemPromptOverride != null && !systemPromptOverride.isBlank())
 			? systemPromptOverride
 			: defaultSystemPrompt;
@@ -90,7 +92,7 @@ public class OpenAIService {
 		// 4. Add Current User Prompt
 		messages.add(Map.of("role", "user", "content", promptText));
 
-		// 5. Save PENDING State
+		// 5. Save PENDING
 		ConversationPair conversation = ConversationPair.builder()
 			.id(correlationId)
 			.threadId(threadId)
@@ -120,7 +122,8 @@ public class OpenAIService {
 	}
 
 	private String callAIEndpoint(List<Map<String, String>> messages) {
-		AIRequestPayload request = new AIRequestPayload(defaultModel, messages, defaultMaxTokens);
+		// FIX: Include temperature in the request payload
+		AIRequestPayload request = new AIRequestPayload(defaultModel, messages, defaultMaxTokens, defaultTemperature);
 
 		return restClient.post()
 			.uri("/chat/completions")
@@ -131,8 +134,17 @@ public class OpenAIService {
 	}
 
 	// --- Inner Records (DTOs) for OpenAI JSON ---
-	private record AIRequestPayload(String model, List<Map<String, String>> messages, int max_tokens) {}
-	private record AIResponsePayload(List<AIChoice> choices) {}
-	private record AIChoice(AIMessage message) {}
-	private record AIMessage(String content) {}
+	// FIX: Added 'temperature' field to the record
+	private record AIRequestPayload(String model, List<Map<String, String>> messages, int max_tokens,
+	                                double temperature) {
+	}
+
+	private record AIResponsePayload(List<AIChoice> choices) {
+	}
+
+	private record AIChoice(AIMessage message) {
+	}
+
+	private record AIMessage(String content) {
+	}
 }
