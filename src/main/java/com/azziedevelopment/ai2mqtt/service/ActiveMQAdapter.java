@@ -4,8 +4,8 @@ import com.azziedevelopment.ai2mqtt.dto.AIRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.jms.Message;
 import jakarta.jms.TextMessage;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
@@ -13,13 +13,19 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 @ConditionalOnProperty(name = "messaging.type", havingValue = "activemq")
 public class ActiveMQAdapter implements MessagingService {
 
 	private final JmsTemplate jmsTemplate;
 	private final OpenAIService aiService;
 	private final ObjectMapper objectMapper;
+
+	@Autowired
+	public ActiveMQAdapter(JmsTemplate jmsTemplate, OpenAIService aiService, ObjectMapper objectMapper) {
+		this.jmsTemplate = jmsTemplate;
+		this.aiService = aiService;
+		this.objectMapper = objectMapper;
+	}
 
 	@JmsListener(destination = "ai.prompts")
 	public void onMessage(Message message) {
