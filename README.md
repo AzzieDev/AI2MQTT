@@ -49,7 +49,7 @@ MQTT_PASSWORD=your_mqtt_password
 ```yaml
 services:
   ai2mqtt:
-    image: ghcr.io/azziedevelopment/ai2mqtt:latest
+    image: ghcr.io/azziedev/ai2mqtt:latest
     container_name: ai2mqtt
     restart: unless-stopped
     ports:
@@ -80,7 +80,7 @@ services:
 ```yaml
 services:
   ai2mqtt:
-    image: ghcr.io/azziedevelopment/ai2mqtt:latest
+    image: ghcr.io/azziedev/ai2mqtt:latest
     container_name: ai2mqtt-app
     restart: unless-stopped
     ports:
