@@ -69,7 +69,7 @@ public class MQTTAdapter implements MessagingService {
 		private final ObjectMapper objectMapper;
 
 		// --- CONNECTION PROPERTIES (Moved here) ---
-		@Value("${mqtt.broker.url}")
+		@Value("${mqtt.broker.url:}")
 		private String brokerUrl;
 
 		@Value("${mqtt.username:}")
