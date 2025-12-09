@@ -24,22 +24,44 @@ public class HAAutoDiscovery {
 	@Value("${mqtt.topic.responses}")
 	private String responseTopic;
 
+	@Value("${mqtt.topic.prompts}")
+	private String promptTopic;
+
 	@EventListener(ApplicationReadyEvent.class)
 	public void announceDevice() {
-		log.info("Announcing AI2MQTT Device to Home Assistant...");
+		log.info("Announcing AI2MQTT Device (Sensors) to Home Assistant...");
 
-		// UPDATE:
-		// 1. We truncate the main state to 250 chars to avoid "Unknown" errors.
-		// 2. We put the FULL response into a 'full_text' attribute.
+		// 1. ANNOUNCE RESPONSE SENSOR
+		sendDiscoveryPacket(
+			"AI Last Response",
+			"ai2mqtt_last_response",
+			responseTopic,
+			"{{ value_json.response | truncate(250) }}",
+			"{{ {'full_text': value_json.response, 'thread_id': value_json.threadId} | tojson }}",
+			"mdi:robot"
+		);
+
+		// 2. ANNOUNCE PROMPT SENSOR (New!)
+		sendDiscoveryPacket(
+			"AI Last Prompt",
+			"ai2mqtt_last_prompt",
+			promptTopic,
+			"{{ value_json.text | truncate(250) }}",
+			"{{ {'full_text': value_json.text, 'thread_id': value_json.threadId, 'model': value_json.model} | tojson }}",
+			"mdi:message-text"
+		);
+	}
+
+	private void sendDiscoveryPacket(String name, String uniqueId, String stateTopic, String valueTemplate, String attrTemplate, String icon) {
 		String configPayload = """
 			{
-			  "name": "AI Last Response",
-			  "unique_id": "ai2mqtt_last_response",
+			  "name": "%s",
+			  "unique_id": "%s",
 			  "state_topic": "%s",
-			  "value_template": "{{ value_json.response | truncate(250) }}",
+			  "value_template": "%s",
 			  "json_attributes_topic": "%s",
-			  "json_attributes_template": "{{ {'full_text': value_json.response} | tojson }}",
-			  "icon": "mdi:robot",
+			  "json_attributes_template": "%s",
+			  "icon": "%s",
 			  "device": {
 			    "identifiers": ["ai2mqtt_bridge"],
 			    "name": "AI2MQTT Bridge",
@@ -48,9 +70,10 @@ public class HAAutoDiscovery {
 			    "sw_version": "1.0.0"
 			  }
 			}
-			""".formatted(responseTopic, responseTopic);
+			""".formatted(name, uniqueId, stateTopic, valueTemplate, stateTopic, attrTemplate, icon);
 
-		String discoveryTopic = "homeassistant/sensor/ai2mqtt/response/config";
+		// Discovery Topic Format: homeassistant/sensor/<node_id>/<object_id>/config
+		String discoveryTopic = "homeassistant/sensor/ai2mqtt/" + uniqueId + "/config";
 
 		Message<String> message = MessageBuilder
 			.withPayload(configPayload)
@@ -60,9 +83,9 @@ public class HAAutoDiscovery {
 
 		try {
 			mqttOutboundHandler.handleMessage(message);
-			log.info("Discovery packet sent to: {}", discoveryTopic);
+			log.info("Discovery packet sent: {}", uniqueId);
 		} catch (Exception e) {
-			log.error("Failed to send discovery packet", e);
+			log.error("Failed to send discovery packet for {}", uniqueId, e);
 		}
 	}
 }
