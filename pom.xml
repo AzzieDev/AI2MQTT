@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -101,6 +101,7 @@
 		</dependency>
 	</dependencies>
 
+	<!-- Version Management for Testcontainers -->
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -113,8 +114,10 @@
 		</dependencies>
 	</dependencyManagement>
 
+	<!-- MAIN BUILD CONFIGURATION -->
 	<build>
 		<plugins>
+			<!-- Compiler Plugin: Configured explicitly for Lombok & Java 25 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -147,6 +150,7 @@
 		</plugins>
 	</build>
 
+	<!-- RELEASE PROFILE: Strips ActiveMQ for lightweight deployment -->
 	<profiles>
 		<profile>
 			<id>release</id>
@@ -157,12 +161,10 @@
 						<artifactId>spring-boot-maven-plugin</artifactId>
 						<configuration>
 							<excludes>
-								<!-- Exclude Lombok -->
 								<exclude>
 									<groupId>org.projectlombok</groupId>
 									<artifactId>lombok</artifactId>
 								</exclude>
-								<!-- Exclude ActiveMQ in Release Mode -->
 								<exclude>
 									<groupId>org.springframework.boot</groupId>
 									<artifactId>spring-boot-starter-activemq</artifactId>
