@@ -18,7 +18,7 @@ forwards requests to **OpenAI**, **Google Gemini**, or self-hosted LLMs like **v
 
 * **Hotswappable Messaging:** Switch between **MQTT** (Mosquitto/Home Assistant) and **ActiveMQ Classic** with a single
   config flag.
-* **Universal AI Support:** Works with OpenAI (`gpt-4o`), Google Gemini (`gemini-1.5-flash`), or Local AI (`vLLM`/
+* **Universal AI Support:** Works with OpenAI (`gpt-4o`), Google Gemini (`gemini-2.5-flash`), or Local AI (`vLLM`/
   `Ollama`) via OpenAI-compatible endpoints.
 * **Chat Chaining:** Automatically maintains conversation history. Just pass a `threadId` to keep the context alive.
 * **Dynamic Personas:** Override the System Prompt per message (e.g., make the AI sarcastic, concise, or specific to a
